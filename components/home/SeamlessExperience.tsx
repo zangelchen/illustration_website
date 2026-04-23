@@ -90,7 +90,7 @@ export function SeamlessExperience() {
   const mobileOfferingSelectorRef = useRef<HTMLDivElement | null>(null);
   const mobileOfferingRefs = useRef(new Map<string, HTMLButtonElement>());
   const rootSectionRef = useRef<HTMLElement | null>(null);
-  const offeringTransitionRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const offeringTransitionRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionIds = useMemo(() => TIMELINE_ITEMS.map((item) => item.id), []);
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export function SeamlessExperience() {
 
   useEffect(() => {
     if (offeringTransitionRef.current) {
-      window.clearTimeout(offeringTransitionRef.current);
+      clearTimeout(offeringTransitionRef.current);
     }
 
     if (activeOfferingId === displayOfferingId) {
@@ -158,7 +158,7 @@ export function SeamlessExperience() {
     }
 
     setOfferingVisible(false);
-    offeringTransitionRef.current = window.setTimeout(() => {
+    offeringTransitionRef.current = setTimeout(() => {
       setDisplayOfferingId(activeOfferingId);
       setOfferingVisible(true);
       offeringTransitionRef.current = null;
@@ -166,7 +166,7 @@ export function SeamlessExperience() {
 
     return () => {
       if (offeringTransitionRef.current) {
-        window.clearTimeout(offeringTransitionRef.current);
+        clearTimeout(offeringTransitionRef.current);
       }
     };
   }, [activeOfferingId, displayOfferingId]);
@@ -203,7 +203,7 @@ export function SeamlessExperience() {
 
   useEffect(() => {
     let frameId = 0;
-    let timeoutId: ReturnType<typeof window.setTimeout> | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let stopAt = 0;
 
     const updateDotPosition = () => {
@@ -232,12 +232,12 @@ export function SeamlessExperience() {
     startTracking();
     window.addEventListener("resize", updateDotPosition);
     window.addEventListener("scroll", updateDotPosition, { passive: true });
-    timeoutId = window.setTimeout(() => startTracking(180), 160);
+    timeoutId = setTimeout(() => startTracking(180), 160);
 
     return () => {
       window.cancelAnimationFrame(frameId);
       if (timeoutId) {
-        window.clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
       }
       window.removeEventListener("resize", updateDotPosition);
       window.removeEventListener("scroll", updateDotPosition);
@@ -420,7 +420,7 @@ export function SeamlessExperience() {
                     loop
                     playsInline
                   />
-                ) : activeOfferingMedia?.type === "image" ? (
+                ) : activeOfferingMedia?.type === "image" && activeOfferingMedia.src ? (
                   <Image
                     src={activeOfferingMedia.src}
                     alt={activeOfferingMedia.alt ?? activeOffering.title}

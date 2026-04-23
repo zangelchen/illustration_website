@@ -1,6 +1,30 @@
 "use client";
 
-export const WHATS_INCLUDED_OFFERINGS = [
+type WhatsIncludedOffering = {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+};
+
+type SeamlessExperienceDetail = {
+  label: string;
+  value: string;
+};
+
+type SeamlessExperienceSection = {
+  id: string;
+  label: string;
+  kicker: string;
+  title: string;
+  lede: string;
+  paragraphs: string[];
+  details: SeamlessExperienceDetail[];
+  highlights: string[];
+  closing: string;
+};
+
+export const WHATS_INCLUDED_OFFERINGS: readonly WhatsIncludedOffering[] = [
   {
     id: "portraits-ink-watercolor",
     label: "Watercolor Portraits",
@@ -38,7 +62,7 @@ export const WHATS_INCLUDED_OFFERINGS = [
   },
 ] as const;
 
-export const SEAMLESS_EXPERIENCE_CONTENT = [
+export const SEAMLESS_EXPERIENCE_CONTENT: readonly SeamlessExperienceSection[] = [
   {
     id: "experience",
     label: "The Experience",
