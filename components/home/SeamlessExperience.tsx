@@ -1,5 +1,6 @@
 "use client";
 
+import experienceBackground from "../../Experience_Background.png";
 import Image from "next/image";
 import { type CSSProperties, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
@@ -247,16 +248,22 @@ export function SeamlessExperience() {
   useEffect(() => {
     const updateRailVisibility = () => {
       const root = rootSectionRef.current;
+      const experienceSection = sectionRefs.current.get("experience");
       if (!root) return;
 
       const desktop = window.innerWidth >= 1024;
-      if (!desktop) {
+      if (!desktop || !experienceSection) {
         setRailVisible(false);
         return;
       }
 
-      const rect = root.getBoundingClientRect();
-      const shouldShow = rect.top < window.innerHeight && rect.bottom > 0;
+      const rootRect = root.getBoundingClientRect();
+      const experienceRect = experienceSection.getBoundingClientRect();
+      const activationLine = window.innerHeight * 0.62;
+      const shouldShow =
+        rootRect.bottom > 0 &&
+        experienceRect.top <= activationLine;
+
       setRailVisible(shouldShow);
     };
 
@@ -864,8 +871,10 @@ export function SeamlessExperience() {
         <aside
           data-testid="experience-rail"
           aria-label="Section navigation"
-          className={`pointer-events-auto flex h-full w-full items-stretch justify-end transition-all duration-500 ${
-            railVisible ? "translate-x-0 opacity-100" : "-translate-x-6 opacity-0"
+          className={`flex h-full w-full items-stretch justify-end transition-all duration-500 ${
+            railVisible
+              ? "pointer-events-auto visible translate-x-0 opacity-100"
+              : "pointer-events-none invisible -translate-x-6 opacity-0"
           }`}
         >
           <div
@@ -1060,19 +1069,57 @@ export function SeamlessExperience() {
                   className="scroll-mt-32"
                 >
                   <article
-                  className={`max-w-6xl flex flex-col justify-center ${SECTION_STAGE_CLASS} ${
+                    className={`max-w-6xl flex flex-col justify-center ${
+                      item.id === "experience" ? "relative overflow-hidden" : ""
+                    } ${SECTION_STAGE_CLASS} ${
                       index === 0 ? "pt-6 sm:pt-8 lg:pt-12" : ""
                     }`}
                     data-testid={`section-${item.id}`}
                   >
+                    {item.id === "experience" ? (
+                      <>
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-y-0 -right-[5.5vw] hidden w-[62vw] max-w-[72rem] lg:block"
+                          data-testid="experience-background-wrap"
+                        >
+                          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,234,219,0.96)_0%,rgba(244,234,219,0.82)_14%,rgba(244,234,219,0.26)_34%,rgba(244,234,219,0.04)_58%,rgba(244,234,219,0.08)_100%)]" />
+                          <div
+                            className="absolute inset-0"
+                            data-testid="experience-background-mask"
+                            style={{
+                              WebkitMaskImage:
+                                "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.16) 20%, rgba(0, 0, 0, 0.55) 36%, black 52%)",
+                              maskImage:
+                                "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.16) 20%, rgba(0, 0, 0, 0.55) 36%, black 52%)",
+                            }}
+                          >
+                            <Image
+                              src={experienceBackground}
+                              alt=""
+                              fill
+                              sizes="(min-width: 1280px) 62vw, 0vw"
+                              className="h-full w-full object-contain object-right-center opacity-[0.36]"
+                              data-testid="experience-background-image"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-y-0 right-[12%] hidden w-[34rem] bg-[radial-gradient(circle_at_center,rgba(255,248,240,0.34),transparent_72%)] blur-3xl lg:block"
+                        />
+                      </>
+                    ) : null}
                     <div
                       className={`grid gap-10 ${
                         isAboutSection
                           ? ""
-                          : "lg:grid-cols-[minmax(0,1.18fr)_minmax(13rem,0.48fr)] lg:gap-10"
+                          : item.id === "experience"
+                            ? "lg:grid-cols-[minmax(0,0.98fr)_minmax(16rem,0.78fr)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.88fr)]"
+                            : "lg:grid-cols-[minmax(0,1.18fr)_minmax(13rem,0.48fr)] lg:gap-10"
                       }`}
                     >
-                      <div>
+                      <div className={item.id === "experience" ? "relative z-10 lg:pr-8 xl:pr-12" : ""}>
                         <h2
                           className={`${item.kicker ? "mt-5" : "mt-0"} text-[2.1rem] font-light leading-[1.06] text-[#2f2217] sm:text-4xl md:text-5xl`}
                           style={{ fontFamily: "var(--font-editorial-serif)" }}
@@ -1094,22 +1141,38 @@ export function SeamlessExperience() {
                           </div>
                         ) : null}
                         <p
-                          className="mt-6 max-w-2xl text-[1.05rem] leading-8 text-[#5f4a31] sm:mt-7 sm:text-xl sm:leading-relaxed"
+                          className={`mt-6 text-[1.05rem] leading-8 text-[#5f4a31] sm:mt-7 sm:text-xl sm:leading-relaxed ${
+                            item.id === "experience" ? "max-w-[38rem]" : "max-w-2xl"
+                          }`}
                           style={{ fontFamily: "var(--font-editorial-sans)" }}
                         >
                           {item.lede}
                         </p>
 
                         <div
-                          className={`${item.id === "experience" ? "mt-8 space-y-6 sm:mt-10 sm:space-y-7" : "mt-10 space-y-7 sm:mt-12 sm:space-y-8"}`}
+                          className={`${
+                            item.id === "experience"
+                              ? "mt-8 max-w-[38rem] space-y-5 sm:mt-10 sm:max-w-[39rem] sm:space-y-6 lg:max-w-[40rem]"
+                              : "mt-10 space-y-7 sm:mt-12 sm:space-y-8"
+                          }`}
                         >
                           {item.paragraphs.map((paragraph) => (
                             <p
                               key={paragraph}
                               className={`max-w-[42rem] text-[1rem] leading-7 text-[#6d563b] sm:text-[1.02rem] sm:leading-8 ${
-                                item.id === "experience" ? "sm:text-[1.04rem] sm:leading-[2.05]" : ""
+                                item.id === "experience"
+                                  ? "max-w-none text-[1.01rem] leading-[1.92] sm:text-[1.04rem] sm:leading-[2.02]"
+                                  : ""
                               }`}
-                              style={{ fontFamily: "var(--font-editorial-sans)" }}
+                              style={{
+                                fontFamily: "var(--font-editorial-sans)",
+                                ...(item.id === "experience"
+                                  ? ({
+                                      textAlign: "justify",
+                                      textJustify: "inter-word",
+                                    } as CSSProperties)
+                                  : {}),
+                              }}
                             >
                               {paragraph}
                             </p>
